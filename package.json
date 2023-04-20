@@ -1,0 +1,22 @@
+{
+  "name": "color-vis",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@rollup/plugin-dsv": "^2.0.3",
+    "vite": "^3.0.7"
+  },
+  "dependencies": {
+    "ac-colors": "^1.4.3",
+    "colord": "^2.9.3",
+    "d3": "^7.6.1",
+    "three": "^0.151.3",
+    "three-orbitcontrols": "^2.110.3"
+  }
+}

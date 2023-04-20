@@ -1,0 +1,27 @@
+:root {
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+
+background-color: #828282;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+
+}
+body{
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+.info{
+  position: absolute;
+  top: 0;
+  left: 20px;
+  color: aliceblue;
+}

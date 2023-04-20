@@ -1,0 +1,96 @@
+<!--
+ * @Description: 
+ * @Version: 2.0
+ * @Author: yichuanhao
+ * @Date: 2023-04-17 19:17:54
+ * @LastEditors: yichuanhao
+ * @LastEditTime: 2023-04-20 17:19:23
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite App</title>
+    <!-- 引入Vue.js -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <!-- 引入Element的CSS文件 -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/element-ui/lib/theme-chalk/index.css"
+    />
+  </head>
+  <body>
+    <div id="app">
+      <canvas class="webgl"></canvas>
+      <div class="info" id="info">
+        <p>
+          <span>颜色：</span>
+          <span id="name"></span>
+        </p>
+        <p>
+          <span>l：</span>
+          <span id="l"></span>
+        </p>
+        <p>
+          <span>a：</span>
+          <span id="a"></span>
+        </p>
+        <p>
+          <span>b：</span>
+          <span id="b"></span>
+        </p>
+        <p>
+          <span>来源：</span>
+          <span id="from"></span>
+        </p>
+        <!-- 二级颜色 -->
+        <el-select
+          v-model="secondColorValue"
+          placeholder="请选择二级颜色"
+          size="small"
+          multiple
+          collapse-tags
+          filterable
+          clearable
+          @change="secondLevelChange"
+        >
+          <el-option
+            v-for="(item, index) in secondLevelList"
+            :key="index"
+            :label="item"
+            :value="item"
+          >
+          </el-option>
+        </el-select>
+        <!-- 三级颜色 -->
+        <el-select
+          v-model="thirdColorValue"
+          placeholder="请选择三级颜色"
+          size="small"
+          multiple
+          filterable
+          collapse-tags
+          clearable
+          @change="thirdLevelChange"
+        >
+          <el-option
+            v-for="(item, index) in thirdLevelList"
+            :key="index"
+            :label="item"
+            :value="item"
+          >
+          </el-option>
+        </el-select>
+
+        <select id="mySelect" style="display: none"></select>
+        <select id="meshSelect" style="display: none"></select>
+        <select id="meshMatSelect" style="display: none"></select>
+      </div>
+    </div>
+    <!-- 引入Element的JS文件 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script type="module" src="/3d.js"></script>
+  </body>
+</html>
