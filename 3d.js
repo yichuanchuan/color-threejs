@@ -218,6 +218,7 @@ let selectedObject = null;
 
 function onPointerMove(event) {
   group.clear();
+  setInfo("", "", "", "", "", "");
   if (!app.group) return;
   if (selectedObject) {
     selectedObject.scale.set(0.01, 0.01, 0.01);
@@ -239,7 +240,14 @@ function onPointerMove(event) {
       let l = map(res.point.x, 0, 1, 0, 100, true);
       let a = map(res.point.y, 0, 1, -128, 127, true);
       let b = map(res.point.z, 0, 1, -128, 127, true);
-      setInfo(colord({ l: l, a: a, b: b }).toHex(), l, a, b, res.object.name);
+      setInfo(
+        colord({ l: l, a: a, b: b }).toHex(),
+        l,
+        a,
+        b,
+        res.object.name,
+        res.object.from ? res.object.from : ""
+      );
       if (res.object.name) {
         var text = res.object.name; // 文字内容
         var fontLoader = new FontLoader(); // 创建字体加载器
@@ -264,12 +272,13 @@ function onPointerMove(event) {
     }
   }
 }
-function setInfo(name, l, a, b, from) {
+function setInfo(name, l, a, b, colorName, from) {
   document.querySelector("#name").innerHTML = name;
   document.querySelector("#name").style.color = name;
   document.querySelector("#l").innerHTML = l;
   document.querySelector("#a").innerHTML = a;
   document.querySelector("#b").innerHTML = b;
+  document.querySelector("#colorName").innerHTML = colorName;
   document.querySelector("#from").innerHTML = from;
 }
 // 下拉框切换
@@ -528,6 +537,7 @@ let app = new Vue({
           // 创建球体材质
           let convexSphere = this.creatSphere(position, c);
           convexSphere.name = d.color;
+          convexSphere.from = d.from;
           this.group.add(convexSphere);
         });
         let convexGeoMesh = this.creatGeometry(points);
