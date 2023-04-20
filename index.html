@@ -3,8 +3,8 @@
  * @Version: 2.0
  * @Author: yichuanhao
  * @Date: 2023-04-17 19:17:54
- * @LastEditors: yichuanhao
- * @LastEditTime: 2023-04-20 17:19:23
+ * @LastEditors: yichuanhao 1274816963@qq.com
+ * @LastEditTime: 2023-04-20 20:07:13
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -42,9 +42,28 @@
           <span id="b"></span>
         </p>
         <p>
-          <span>来源：</span>
+          <span>颜色名称：</span>
           <span id="from"></span>
         </p>
+        <!-- 一级颜色 -->
+        <el-select
+          v-model="firstColorValue"
+          placeholder="请选择一级颜色"
+          size="small"
+          multiple
+          collapse-tags
+          filterable
+          clearable
+          @change="firstLevelChange"
+        >
+          <el-option
+            v-for="(item, index) in firstLevelList"
+            :key="index"
+            :label="item"
+            :value="item"
+          >
+          </el-option>
+        </el-select>
         <!-- 二级颜色 -->
         <el-select
           v-model="secondColorValue"

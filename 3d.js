@@ -1,5 +1,7 @@
 import "./style.css";
 import { ConvexGeometry } from "three/addons/geometries/ConvexGeometry.js";
+import { FontLoader } from "three/addons/loaders/FontLoader.js";
+import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
 import data from "./color/colors.csv";
 import firstLevel from "./color/firstLevel.csv";
 import secondLevel from "./color/secondLevel.csv";
@@ -215,6 +217,7 @@ function onWindowResize() {
 let selectedObject = null;
 
 function onPointerMove(event) {
+  group.clear();
   if (!app.group) return;
   if (selectedObject) {
     selectedObject.scale.set(0.01, 0.01, 0.01);
@@ -232,15 +235,35 @@ function onPointerMove(event) {
     const res = intersects.filter(function (res) {
       return res && res.object;
     })[0];
-    if (res && res.point) {
+    if (res && res.point && res.object) {
       let l = map(res.point.x, 0, 1, 0, 100, true);
       let a = map(res.point.y, 0, 1, -128, 127, true);
       let b = map(res.point.z, 0, 1, -128, 127, true);
-      setInfo(colord({ l: l, a: a, b: b }).toHex(), l, a, b, "");
+      setInfo(colord({ l: l, a: a, b: b }).toHex(), l, a, b, res.object.name);
+      if (res.object.name) {
+        var text = res.object.name; // 文字内容
+        var fontLoader = new FontLoader(); // 创建字体加载器
+        fontLoader.load("fonts/SJgzks_Regular.json", function (font) {
+          // 加载字体文件
+          var geometry = new TextGeometry(text, {
+            // 创建文字几何体
+            font: font,
+            size: 0.03,
+            height: 0.0,
+            curveSegments: 1,
+            bevelEnabled: false,
+          });
+          var material = new THREE.MeshBasicMaterial({ color: 0xffffff }); // 创建材质
+          var mesh = new THREE.Mesh(geometry, material); // 创建网格
+          mesh.position.set(res.point.x, res.point.y, res.point.z); // 设置位置
+          mesh.rotateY(45);
+          group.add(mesh);
+          scene.add(group); // 将网格添加到场景中
+        });
+      }
     }
   }
 }
-
 function setInfo(name, l, a, b, from) {
   document.querySelector("#name").innerHTML = name;
   document.querySelector("#name").style.color = name;
@@ -420,20 +443,48 @@ let app = new Vue({
   el: "#info",
   data() {
     return {
-      firstLevel: [], // 第一层级列表
+      firstLevelList: [], // 第一层级列表
       secondLevelList: [], // 第二层级列表
       thirdLevelList: [], // 第三层级列表
+      firstColorValue: [], // 第一层级选中的值
       secondColorValue: [], // 第二层级选中的值
       thirdColorValue: [], // 第三层级选中的值
       group: null, // 用于管理mesh对象
     };
   },
   methods: {
+    // 一层级切换
+    firstLevelChange(val, flag = false) {
+      if (!flag) {
+        if (this.group.children.length > 0) this.group.clear();
+        this.secondLevelChange(this.secondColorValue, true);
+        this.thirdLevelChange(this.thirdColorValue, true);
+      }
+      val.forEach((item) => {
+        let colorsData = firstLevel.filter((d) => d.parent === item);
+        let points = [];
+        colorsData.forEach((d, i) => {
+          const c = colord({ l: d.l, a: d.a, b: d.b }).toHex();
+          const x = map(d.l, 0, 100, 0, 1, true);
+          const y = map(d.a, -128, 127, 0, 1, true);
+          const z = map(d.b, -128, 127, 0, 1, true);
+          let position = new THREE.Vector3(x, y, z);
+          // 存入每个点坐标位置
+          points.push(position);
+          // 创建球体材质
+          let convexSphere = this.creatSphere(position, c);
+          convexSphere.name = d.color;
+          this.group.add(convexSphere);
+        });
+      });
+      scene.add(this.group);
+    },
     // 二层级切换
     secondLevelChange(val, flag = false) {
       if (!flag) {
         if (this.group.children.length > 0) this.group.clear();
         this.thirdLevelChange(this.thirdColorValue, true);
+        this.firstLevelChange(this.firstColorValue, true);
       }
       val.forEach((item) => {
         let colorsData = secondLevel.filter((d) => d.parent === item);
@@ -448,6 +499,7 @@ let app = new Vue({
           points.push(position);
           // 创建球体材质
           let convexSphere = this.creatSphere(position, c);
+          convexSphere.name = d.color;
           this.group.add(convexSphere);
         });
         let convexGeoMesh = this.creatGeometry(points);
@@ -460,6 +512,7 @@ let app = new Vue({
       if (!flag) {
         if (this.group.children.length > 0) this.group.clear();
         this.secondLevelChange(this.secondColorValue, true);
+        this.firstLevelChange(this.firstColorValue, true);
       }
       val.forEach((item) => {
         let colorsData = thirdLevel.filter((d) => d.parent === item);
@@ -474,6 +527,7 @@ let app = new Vue({
           points.push(position);
           // 创建球体材质
           let convexSphere = this.creatSphere(position, c);
+          convexSphere.name = d.color;
           this.group.add(convexSphere);
         });
         let convexGeoMesh = this.creatGeometry(points);
@@ -579,20 +633,8 @@ let app = new Vue({
   },
   created() {
     this.group = new THREE.Group(); // 创建group管理所有几何体和点
-    this.firstLevel = firstLevel;
+    this.firstLevelList = this.formatData(firstLevel);
     this.secondLevelList = this.formatData(secondLevel);
     this.thirdLevelList = this.formatData(thirdLevel);
-    let firstGroup = new THREE.Group();
-    this.firstLevel.forEach((d) => {
-      const c = colord({ l: d.l, a: d.a, b: d.b }).toHex();
-      const x = map(d.l, 0, 100, 0, 1, true);
-      const y = map(d.a, -128, 127, 0, 1, true);
-      const z = map(d.b, -128, 127, 0, 1, true);
-      let position = new THREE.Vector3(x, y, z);
-      // 创建球体材质
-      let convexSphere = this.creatSphere(position, c);
-      firstGroup.add(convexSphere);
-    });
-    scene.add(firstGroup);
   },
 });
