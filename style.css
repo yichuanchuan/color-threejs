@@ -21,7 +21,7 @@ body {
   margin: 0;
   padding: 0;
 }
-p:first-of-type {
+.title-top {
   margin-top: 15px;
 }
 p {

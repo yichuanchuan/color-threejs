@@ -10,13 +10,6 @@ import { colord, extend } from "colord";
 import labPlugin from "colord/plugins/lab";
 import { qing, chi, huang, bai, hei } from "./meshpoints";
 
-//a map function like p5js without contrain funcion
-function number_map(value, start1, stop1, start2, stop2) {
-  var newval =
-    ((value - start1) / (stop1 - start1)) * (stop2 - start2) + start2;
-  return newval;
-}
-
 extend([labPlugin]);
 
 const meshSelect = document.querySelector("#meshSelect");
@@ -281,6 +274,7 @@ let app = new Vue({
         if (this.group.children.length > 0) this.group.clear();
         this.secondLevelChange(this.secondColorValue, true);
         this.thirdLevelChange(this.thirdColorValue, true);
+        this.changeColor(this.colorValue, true);
       }
       val.forEach((item) => {
         let colorsData = firstLevel.filter((d) => d.parent === item);
@@ -307,6 +301,7 @@ let app = new Vue({
         if (this.group.children.length > 0) this.group.clear();
         this.thirdLevelChange(this.thirdColorValue, true);
         this.firstLevelChange(this.firstColorValue, true);
+        this.changeColor(this.colorValue, true);
       }
       val.forEach((item) => {
         let colorsData = secondLevel.filter((d) => d.parent === item);
@@ -335,6 +330,7 @@ let app = new Vue({
         if (this.group.children.length > 0) this.group.clear();
         this.secondLevelChange(this.secondColorValue, true);
         this.firstLevelChange(this.firstColorValue, true);
+        this.changeColor(this.colorValue, true);
       }
       val.forEach((item) => {
         let colorsData = thirdLevel.filter((d) => d.parent === item);
@@ -471,8 +467,42 @@ let app = new Vue({
       this.secondLevelChange(this.secondColorValue, true);
       this.thirdLevelChange(this.thirdColorValue, true);
     },
-    changeColor(val) {
-      this.colorValue = val || "";
+    changeColor(val, flag = false) {
+      if (!flag) {
+        if (this.group.children.length > 0) this.group.clear();
+        this.thirdLevelChange(this.thirdColorValue, true);
+        this.firstLevelChange(this.firstColorValue, true);
+        this.secondLevelChange(this.secondColorValue, true);
+      }
+      let reg =
+        /^(100|\d{1,2}),(12[0-7]|1[01]\d|[1-9]\d|\d|-\d|[1-7][0-9]|-8[0-9]|-9[0-9]|-1[01]\d|-12[0-8]),(12[0-7]|1[01]\d|[1-9]\d|\d|-\d|[1-7][0-9]|-8[0-9]|-9[0-9]|-1[01]\d|-12[0-8])$/;
+      if (reg.test(val)) {
+        let arr = val.split(",");
+        const c = colord({ l: arr[0], a: arr[1], b: arr[2] }).toHex();
+        const x = map(arr[0], 0, 100, 0, 1, true);
+        const y = map(arr[0], -128, 127, 0, 1, true);
+        const z = map(arr[0], -128, 127, 0, 1, true);
+        let position = new THREE.Vector3(x, y, z);
+        // 存入每个点坐标位置
+        let convexSphere = this.creatSphere(position, c);
+        convexSphere.name = "自定义";
+        this.group.add(convexSphere);
+        scene.add(this.group);
+        if (!flag) {
+          this.$message({
+            showClose: true,
+            message: "添加成功",
+            type: "success",
+          });
+        }
+      } else {
+        if (flag) return;
+        this.$message({
+          showClose: true,
+          message: "请输入正确的lab颜色格式,格式为 0,0,0",
+          type: "error",
+        });
+      }
     },
   },
   created() {
