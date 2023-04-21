@@ -3,8 +3,8 @@
  * @Version: 2.0
  * @Author: yichuanhao
  * @Date: 2023-04-17 19:17:54
- * @LastEditors: yichuanhao 1274816963@qq.com
- * @LastEditTime: 2023-04-20 20:07:13
+ * @LastEditors: yichuanhao
+ * @LastEditTime: 2023-04-21 12:08:31
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -106,7 +106,17 @@
           >
           </el-option>
         </el-select>
-
+        <!-- 是否以线框展示 -->
+        <div>
+          <span>是否以线框展示:</span>
+          <el-switch
+            v-model="status"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            :active-text="status ? '是' : '否'"
+            @change="statusChange"
+          ></el-switch>
+        </div>
         <select id="mySelect" style="display: none"></select>
         <select id="meshSelect" style="display: none"></select>
         <select id="meshMatSelect" style="display: none"></select>
