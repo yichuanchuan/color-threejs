@@ -1,5 +1,7 @@
 import "./style.css";
 import { ConvexGeometry } from "three/addons/geometries/ConvexGeometry.js";
+import { FontLoader } from "three/addons/loaders/FontLoader.js";
+import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
 import firstLevel from "./color/firstLevel.csv";
 import secondLevel from "./color/secondLevel.csv";
 import thirdLevel from "./color/thirdLevel.csv";
@@ -39,6 +41,40 @@ const mat = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 2 });
 const mesh = new THREE.LineSegments(geo, mat);
 mesh.position.set(0.5, 0.5, 0.5);
 scene.add(mesh);
+//
+// 创建一个文本几何体
+const loader = new FontLoader();
+const textGroup = new THREE.Group();
+const font = loader.load(
+  // resource URL
+  "SJgzks_Regular.json",
+  // onLoad callback
+  function (font) {
+    for (let i = 0; i < 3; i++) {
+      var textGeometry = new TextGeometry(i == 0 ? "L" : i == 1 ? "a" : "b", {
+        font: font, // 字体
+        size: 0.1, // 大小
+        height: 0.0, // 厚度
+      });
+      if (i == 0) {
+        // 将文本几何体对齐到立方体的顶部
+        textGeometry.translate(0.5, 0, -0.1);
+      } else if (i == 1) {
+        textGeometry.translate(-0.1, 0.5, -0.1);
+      } else {
+        textGeometry.translate(-0.1, 0, 0.5);
+      }
+      // 创建一个文本网格
+      var textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+      var textMesh = new THREE.Mesh(textGeometry, textMaterial);
+      // 将文本网格添加到立方体上
+      textGroup.add(textMesh);
+    }
+
+    // 将立方体添加到场景中
+    scene.add(textGroup);
+  }
+);
 
 //-----------------边界
 
@@ -142,7 +178,7 @@ function onWindowResize() {
 
 let selectedObject = null;
 function onPointerMove(event) {
-  setInfo("", "", "", "", "", "");
+  setInfo("", 0, 0, 0, "", "");
   if (!app.group) return;
   if (selectedObject) {
     selectedObject.scale.set(0.01, 0.01, 0.01);
@@ -170,19 +206,29 @@ function onPointerMove(event) {
         a,
         b,
         res.object.name,
-        res.object.from ? res.object.from : ""
+        res.object.from ? res.object.from : "",
+        res.point
       );
     }
   }
 }
-function setInfo(name, l, a, b, colorName, from) {
+function setInfo(name, l, a, b, colorName, from, point) {
   document.querySelector("#name").innerHTML = name;
   document.querySelector("#name").style.color = name;
-  document.querySelector("#l").innerHTML = l;
-  document.querySelector("#a").innerHTML = a;
-  document.querySelector("#b").innerHTML = b;
+  document.querySelector("#l").innerHTML = Number(l).toFixed(2);
+  document.querySelector("#a").innerHTML = Number(a).toFixed(2);
+  document.querySelector("#b").innerHTML = Number(b).toFixed(2);
   document.querySelector("#colorName").innerHTML = colorName;
   document.querySelector("#from").innerHTML = from;
+  if (point) {
+    document.querySelector("#x").innerHTML = point.x.toFixed(2);
+    document.querySelector("#y").innerHTML = point.y.toFixed(2);
+    document.querySelector("#z").innerHTML = point.z.toFixed(2);
+  } else {
+    document.querySelector("#x").innerHTML = 0.0;
+    document.querySelector("#y").innerHTML = 0.0;
+    document.querySelector("#z").innerHTML = 0.0;
+  }
 }
 
 function onMeshChangeOption(d) {
