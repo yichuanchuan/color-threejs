@@ -1,17 +1,14 @@
 import "./style.css";
 import { ConvexGeometry } from "three/addons/geometries/ConvexGeometry.js";
-import data from "./color/colors.csv";
 import firstLevel from "./color/firstLevel.csv";
 import secondLevel from "./color/secondLevel.csv";
 import thirdLevel from "./color/thirdLevel.csv";
-import color_convex from "./color/color-covex.csv";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as THREE from "three";
 import { map, lab2rgb } from "./utils.js";
 import { colord, extend } from "colord";
 import labPlugin from "colord/plugins/lab";
 import { qing, chi, huang, bai, hei } from "./meshpoints";
-import { json } from "d3";
 
 //a map function like p5js without contrain funcion
 function number_map(value, start1, stop1, start2, stop2) {
@@ -20,19 +17,6 @@ function number_map(value, start1, stop1, start2, stop2) {
   return newval;
 }
 
-//lab值映射到0-1
-const color_convex_mapped = color_convex.map((d) => {
-  return {
-    l: number_map(d.l, 0, 100, 0, 1),
-    a: number_map(d.a, -128, 127, 0, 1),
-    b: number_map(d.b, -128, 127, 0, 1),
-    color: d.color,
-    form: d.form,
-  };
-});
-
-// console.log(data.filter(d=>d.subparent==="棕"))
-let colorsData = data;
 extend([labPlugin]);
 
 const meshSelect = document.querySelector("#meshSelect");
@@ -287,6 +271,7 @@ let app = new Vue({
       thirdColorValue: [], // 第三层级选中的值
       group: null, // 用于管理mesh对象
       status: false,
+      colorValue: "",
     };
   },
   methods: {
@@ -485,6 +470,9 @@ let app = new Vue({
       this.firstLevelChange(this.firstColorValue, true);
       this.secondLevelChange(this.secondColorValue, true);
       this.thirdLevelChange(this.thirdColorValue, true);
+    },
+    changeColor(val) {
+      this.colorValue = val || "";
     },
   },
   created() {

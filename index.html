@@ -4,7 +4,7 @@
  * @Author: yichuanhao
  * @Date: 2023-04-17 19:17:54
  * @LastEditors: yichuanhao
- * @LastEditTime: 2023-04-21 12:08:31
+ * @LastEditTime: 2023-04-21 14:54:05
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -49,6 +49,18 @@
           <span>from：</span>
           <span id="from"></span>
         </p>
+        <p>
+          <span>所属几何体：</span>
+          <span id="from"></span>
+        </p>
+        <el-input
+          clearable
+          v-model="colorValue"
+          placeholder="请输入lab颜色"
+          size="small"
+          @change="changeColor"
+        >
+        </el-input>
         <!-- 一级颜色 -->
         <el-select
           v-model="firstColorValue"
@@ -107,7 +119,7 @@
           </el-option>
         </el-select>
         <!-- 是否以线框展示 -->
-        <div>
+        <div class="switch">
           <span>是否以线框展示:</span>
           <el-switch
             v-model="status"
