@@ -208,7 +208,7 @@ const controls = new OrbitControls(camera, renderer.domElement);
 controls.addEventListener("change", render); // use if there is no animation loop
 controls.minDistance = 1;
 controls.maxDistance = 10;
-controls.target.set(0, 0, -0.2);
+controls.target.set(0.5, 0.5, 0.5);
 controls.update();
 
 function onWindowResize() {
@@ -563,7 +563,7 @@ let app = new Vue({
         this.secondLevelChange(this.secondColorValue, true);
       }
       let reg =
-        /^(100|\d{1,2}),(12[0-7]|1[01]\d|[1-9]\d|\d|-\d|[1-7][0-9]|-8[0-9]|-9[0-9]|-1[01]\d|-12[0-8]),(12[0-7]|1[01]\d|[1-9]\d|\d|-\d|[1-7][0-9]|-8[0-9]|-9[0-9]|-1[01]\d|-12[0-8])$/;
+        /^(100|\d{1,2}),(-?(12[0-8]|1[01][0-9]|[1-9][0-9]?)),(-?(12[0-8]|1[01][0-9]|[1-9][0-9]?))$/;
       if (reg.test(val)) {
         let arr = val.split(",");
         const c = colord({ l: arr[0], a: arr[1], b: arr[2] }).toHex();
