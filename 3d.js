@@ -41,41 +41,83 @@ const mat = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 2 });
 const mesh = new THREE.LineSegments(geo, mat);
 mesh.position.set(0.5, 0.5, 0.5);
 scene.add(mesh);
-//
 // 创建一个文本几何体
 const loader = new FontLoader();
 const textGroup = new THREE.Group();
-const font = loader.load(
-  // resource URL
-  "SJgzks_Regular.json",
-  // onLoad callback
-  function (font) {
-    for (let i = 0; i < 3; i++) {
-      var textGeometry = new TextGeometry(i == 0 ? "L" : i == 1 ? "a" : "b", {
+
+let coordinate = ["l", "a", "b"];
+coordinate.forEach((item) => {
+  textLoader(
+    item,
+    "",
+    item == "l" ? "y" : item == "a" ? "z" : "x",
+    0xff0000,
+    0.1
+  );
+});
+// 增加x、y、z刻度
+let l = ["-128", "10", "20", "30", "40", "50", "60", "70", "80", "90", "100"];
+let a = ["-102", "-76", "-50", "-24", "-2", "28", "44", "70", "96", "124"];
+let b = ["-102", "-76", "-50", "-24", "-2", "28", "44", "70", "96", "124"];
+l.forEach((item, index) => {
+  textLoader(item, (index / 10).toFixed(1), "y");
+});
+a.forEach((item, index) => {
+  textLoader(item, ((index + 1) / 10).toFixed(1), "z");
+});
+b.forEach((item, index) => {
+  textLoader(item, ((index + 1) / 10).toFixed(1), "x");
+});
+function textLoader(
+  text,
+  position,
+  translateType,
+  fontColor = 0xffffff,
+  fontSize = 0.03
+) {
+  // text文本、positon（x,y,z）坐标
+  loader.load(
+    // resource URL
+    "SJgzks_Regular.json",
+    // onLoad callback
+    function (font) {
+      var textGeometry = new TextGeometry(text, {
         font: font, // 字体
-        size: 0.1, // 大小
+        size: fontSize, // 大小
         height: 0.0, // 厚度
       });
-      if (i == 0) {
-        // 将文本几何体对齐到立方体的顶部
-        textGeometry.translate(0.5, 0, -0.1);
-      } else if (i == 1) {
-        textGeometry.translate(-0.1, 0.5, -0.1);
-      } else {
-        textGeometry.translate(-0.1, 0, 0.5);
+      switch (translateType) {
+        case "x":
+          textGeometry.translate(
+            position ? Number(position) : 0.5,
+            position ? 0 : 0.1,
+            -0.1
+          );
+          break;
+        case "y":
+          textGeometry.translate(
+            position ? -0.1 : -0.2,
+            position ? Number(position) : 0.5,
+            -0.1
+          );
+          break;
+        case "z":
+          textGeometry.translate(
+            position ? -0.1 : -0.2,
+            0,
+            position ? Number(position) : 0.5
+          );
+          break;
       }
       // 创建一个文本网格
-      var textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+      var textMaterial = new THREE.MeshBasicMaterial({ color: fontColor });
       var textMesh = new THREE.Mesh(textGeometry, textMaterial);
-      // 将文本网格添加到立方体上
+      // 将文本网格添加到group中
       textGroup.add(textMesh);
     }
-
-    // 将立方体添加到场景中
-    scene.add(textGroup);
-  }
-);
-
+  );
+}
+scene.add(textGroup);
 //-----------------边界
 
 const boundaryQing = new THREE.BufferGeometry();
@@ -197,9 +239,9 @@ function onPointerMove(event) {
       return res && res.object;
     })[0];
     if (res && res.point && res.object) {
-      let l = map(res.point.x, 0, 1, 0, 100, true);
-      let a = map(res.point.y, 0, 1, -128, 127, true);
-      let b = map(res.point.z, 0, 1, -128, 127, true);
+      let l = map(res.point.y, 0, 1, 0, 100, true);
+      let b = map(res.point.x, 0, 1, -128, 127, true);
+      let a = map(res.point.z, 0, 1, -128, 127, true);
       setInfo(
         colord({ l: l, a: a, b: b }).toHex(),
         l,
@@ -327,9 +369,9 @@ let app = new Vue({
         let points = [];
         colorsData.forEach((d, i) => {
           const c = colord({ l: d.l, a: d.a, b: d.b }).toHex();
-          const x = map(d.l, 0, 100, 0, 1, true);
-          const y = map(d.a, -128, 127, 0, 1, true);
-          const z = map(d.b, -128, 127, 0, 1, true);
+          const y = map(d.l, 0, 100, 0, 1, true);
+          const x = map(d.b, -128, 127, 0, 1, true);
+          const z = map(d.a, -128, 127, 0, 1, true);
           let position = new THREE.Vector3(x, y, z);
           // 存入每个点坐标位置
           points.push(position);
@@ -354,9 +396,9 @@ let app = new Vue({
         let points = [];
         colorsData.forEach((d, i) => {
           const c = colord({ l: d.l, a: d.a, b: d.b }).toHex();
-          const x = map(d.l, 0, 100, 0, 1, true);
-          const y = map(d.a, -128, 127, 0, 1, true);
-          const z = map(d.b, -128, 127, 0, 1, true);
+          const y = map(d.l, 0, 100, 0, 1, true);
+          const x = map(d.b, -128, 127, 0, 1, true);
+          const z = map(d.a, -128, 127, 0, 1, true);
           let position = new THREE.Vector3(x, y, z);
           // 存入每个点坐标位置
           points.push(position);
@@ -383,9 +425,9 @@ let app = new Vue({
         let points = [];
         colorsData.forEach((d, i) => {
           const c = colord({ l: d.l, a: d.a, b: d.b }).toHex();
-          const x = map(d.l, 0, 100, 0, 1, true);
-          const y = map(d.a, -128, 127, 0, 1, true);
-          const z = map(d.b, -128, 127, 0, 1, true);
+          const y = map(d.l, 0, 100, 0, 1, true);
+          const x = map(d.b, -128, 127, 0, 1, true);
+          const z = map(d.a, -128, 127, 0, 1, true);
           let position = new THREE.Vector3(x, y, z);
           // 存入每个点坐标位置
           points.push(position);
@@ -428,9 +470,9 @@ let app = new Vue({
       let colors = [];
       // 每个lab值转换成着色器需要的格式
       result.forEach((i) => {
-        let l = map(i[0], 0, 1, 0, 100, true);
-        let a = map(i[1], 0, 1, -128, 127, true);
-        let b = map(i[2], 0, 1, -128, 127, true);
+        let l = map(i[1], 0, 1, 0, 100, true);
+        let a = map(i[2], 0, 1, -128, 127, true);
+        let b = map(i[0], 0, 1, -128, 127, true);
         let c = colord({ l: l, a: a, b: b }).toHex();
         colors = colors.concat(this.colorToRgb(c));
       });
@@ -525,9 +567,9 @@ let app = new Vue({
       if (reg.test(val)) {
         let arr = val.split(",");
         const c = colord({ l: arr[0], a: arr[1], b: arr[2] }).toHex();
-        const x = map(arr[0], 0, 100, 0, 1, true);
-        const y = map(arr[0], -128, 127, 0, 1, true);
-        const z = map(arr[0], -128, 127, 0, 1, true);
+        const y = map(arr[0], 0, 100, 0, 1, true); // l
+        const z = map(arr[1], -128, 127, 0, 1, true); // a
+        const x = map(arr[2], -128, 127, 0, 1, true); // b
         let position = new THREE.Vector3(x, y, z);
         // 存入每个点坐标位置
         let convexSphere = this.creatSphere(position, c);
