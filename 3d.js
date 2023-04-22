@@ -77,7 +77,7 @@ function textLoader(
   // text文本、positon（x,y,z）坐标
   loader.load(
     // resource URL
-    "public/SJgzks_Regular.json",
+    "https://mp-b1d8c872-a2d6-46c4-abef-92af03c823d0.cdn.bspapp.com/cloudstorage/02bcb507-d510-4d17-97dc-d232b651635a.json",
     // onLoad callback
     function (font) {
       var textGeometry = new TextGeometry(text, {
