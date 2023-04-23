@@ -50,7 +50,7 @@ coordinate.forEach((item) => {
     item,
     "",
     item == "l" ? "y" : item == "a" ? "z" : "x",
-    0xff0000,
+    0xffffff,,
     0.1
   );
 });
